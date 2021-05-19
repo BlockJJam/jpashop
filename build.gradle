@@ -27,6 +27,10 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// h2 관련 라이브러리 추가
+	runtimeOnly 'com.h2database:h2'
+
 }
 
 test {
