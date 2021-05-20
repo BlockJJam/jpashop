@@ -31,6 +31,8 @@ dependencies {
 	// h2 관련 라이브러리 추가
 	runtimeOnly 'com.h2database:h2'
 
+	// Valid ( RequestBody와 같은 서버측에서 데이터 바인딩 시에, 데이터가 유효한지 검증하기 위한 Lib)
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 test {

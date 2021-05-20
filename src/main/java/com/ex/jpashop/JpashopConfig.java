@@ -1,4 +1,4 @@
 package com.ex.jpashop;
 
-public class JpashopConfig {
-}
+import org.springframework.context.annotation.Configuration;
+
