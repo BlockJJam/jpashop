@@ -34,6 +34,20 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
+    public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems) {
+        Order order = new Order();
+        order.setMember(member);
+        order.setDelivery(delivery);
+        for(OrderItem orderItem: orderItems){
+            order.addOrderItem(orderItem);
+        }
+
+        order.setStatus(OrderStatus.ORDER);
+        order.setOrderDate(LocalDateTime.now());
+
+        return order;
+    }
+
     public void setMember(Member member){
         this.member = member;
         member.getOrders().add(this);

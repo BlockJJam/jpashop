@@ -24,4 +24,14 @@ public class OrderItem {
 
     private int orderPrice;
     private int count;
+
+    public static OrderItem craeteOrderItem(Item item, int price, int count) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.setItem(item);
+        orderItem.setOrderPrice(price);
+        orderItem.setCount(count);
+
+        item.removeStock(count);
+        return orderItem;
+    }
 }
