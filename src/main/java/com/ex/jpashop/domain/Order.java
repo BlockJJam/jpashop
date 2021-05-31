@@ -18,7 +18,7 @@ public class Order {
     @Column(name="order_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)      // FetchType == Lazy 면, json이 Proxy객체인 ByteBuddyInterceptor를 인식 못함
     @JoinColumn(name="member_id")
     private Member member;
 
@@ -32,7 +32,7 @@ public class Order {
     private LocalDateTime orderDate;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    private OrderStatus orderStatus;
 
     public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems) {
         Order order = new Order();
@@ -42,7 +42,7 @@ public class Order {
             order.addOrderItem(orderItem);
         }
 
-        order.setStatus(OrderStatus.ORDER);
+        order.setOrderStatus(OrderStatus.ORDER);
         order.setOrderDate(LocalDateTime.now());
 
         return order;
@@ -58,4 +58,15 @@ public class Order {
         orderItem.setOrder(this);
     }
 
+    public void cancel() {
+        if(delivery.getStatus().equals(DeliveryStatus.COMP)){
+            throw new IllegalStateException("이미 배송완료된 상품은 취소 불가능!");
+        }
+
+        setOrderStatus(OrderStatus.CANCEL);
+
+        for(OrderItem item : orderItems){
+            item.cancel();
+        }
+    }
 }

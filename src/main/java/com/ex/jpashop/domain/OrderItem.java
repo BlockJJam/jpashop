@@ -1,5 +1,6 @@
 package com.ex.jpashop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +19,7 @@ public class OrderItem {
     @JoinColumn(name="item_id")
     private Item item;
 
+    @JsonIgnore
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="order_id")
     private Order order;
@@ -25,7 +27,7 @@ public class OrderItem {
     private int orderPrice;
     private int count;
 
-    public static OrderItem craeteOrderItem(Item item, int price, int count) {
+    public static OrderItem createOrderItem(Item item, int price, int count) {
         OrderItem orderItem = new OrderItem();
         orderItem.setItem(item);
         orderItem.setOrderPrice(price);
@@ -33,5 +35,9 @@ public class OrderItem {
 
         item.removeStock(count);
         return orderItem;
+    }
+
+    public void cancel(){
+        getItem().addStock(count);
     }
 }
