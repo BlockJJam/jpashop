@@ -95,7 +95,7 @@ public class OrderRepository {
 
     public List<Order> findAll(OrderSearch orderSearch){
         return em.createQuery("select o from Order o join o.member m" +
-                " where o.status = :status"+
+                " where o.orderStatus = :status"+
                 " and m.name like :name", Order.class)
                 .setParameter("status", orderSearch.getOrderStatus())
                 .setParameter("name", orderSearch.getMemberName())
@@ -107,9 +107,17 @@ public class OrderRepository {
     public List<Order> findAllWithMemberDelivery(){
         return em.createQuery(
                 "select o from Order o"+
-                        " left outer join fetch o.member m"+
-                        " left outer join fetch o.delivery d", Order.class)
+                        " join fetch o.member m"+
+                        " join fetch o.delivery d", Order.class)
                 .getResultList();
+    }
+
+    public List<OrderSimpleQueryDto> findOrderDto(){
+        return em.createQuery(
+                "select new com.ex.jpashop.repository.OrderSimpleQueryDto(o.id, m.name, o.orderDate, o.orderStatus, d.address) from Order o"+
+                        " join o.member m"+
+                        " join o.delivery d", OrderSimpleQueryDto.class
+        ).getResultList();
     }
 
     public List<Order> findAllWithMemberDelivery(int offset, int limit){
