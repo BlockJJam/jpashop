@@ -130,11 +130,17 @@ public class OrderRepository {
                 .getResultList();
     }
     public List<Order> findAllWithItem(){
-        return em.createQuery("select distinct o from Order o" +
-                " join fetch o.member " +
-                " join fetch o.delivery " +
-                " join fetch o.orderItems oi " +
-                " join fetch oi.item i ", Order.class)
+        return em.createQuery("select distinct o from Order o"+
+                " join fetch o.member m" +
+                " join fetch o.delivery d" +
+                " join fetch o.orderItems oi" +
+                " join fetch oi.item i", Order.class)
                 .getResultList();
+        // 이대로 하면, 데이터가 2배로 뻥튀기 되버린다
+        // join을 했을 때, orderItems 요소가 order 1개당 2개씩 있기 때문에, fetch join을 하면 같은 데이터가 2번씩 나온다
+        // distinct를 jpa에서 쓰면, ( 요소가 하나라도 다르면 중복이 아니라고보는 DB와 다르게)
+        // 불러온 Entity(id)가 같을 때 중복으로 보고 구별한다
+        // 조심1) 일대다 fetch join에서는 페이징이 불가하는 걸 명심 -> 왜? 일대다에서 페치 + 페이징이 동시에 들어가면서 뻥튀기된 데이터를 처리하기전에 고려하게 된다
+        // 조심2) 컬렉션 페치 조인은 1개만 사용 가능, 즉 join한 컬렉션에서 또 fetch join을 부르면 안된다 -> 데이터 부정합 조회 유발
     }
 }
