@@ -120,7 +120,7 @@ public class OrderRepository {
         ).getResultList();
     }
 
-    public List<Order> findAllWithMemberDelivery(int offset, int limit){
+    /*public List<Order> findAllWithMemberDelivery(int offset, int limit){
         return em.createQuery(
                 "select o from Order o"+
                         " left outer join fetch o.member m"+
@@ -128,7 +128,7 @@ public class OrderRepository {
                 .setFirstResult(offset)
                 .setMaxResults(limit)
                 .getResultList();
-    }
+    }*/
     public List<Order> findAllWithItem(){
         return em.createQuery("select distinct o from Order o"+
                 " join fetch o.member m" +
@@ -142,5 +142,16 @@ public class OrderRepository {
         // 불러온 Entity(id)가 같을 때 중복으로 보고 구별한다
         // 조심1) 일대다 fetch join에서는 페이징이 불가하는 걸 명심 -> 왜? 일대다에서 페치 + 페이징이 동시에 들어가면서 뻥튀기된 데이터를 처리하기전에 고려하게 된다
         // 조심2) 컬렉션 페치 조인은 1개만 사용 가능, 즉 join한 컬렉션에서 또 fetch join을 부르면 안된다 -> 데이터 부정합 조회 유발
+    }
+
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+
+        return em.createQuery(
+                "select o from Order o"+
+                        " join fetch o.member m"+
+                        " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
     }
 }

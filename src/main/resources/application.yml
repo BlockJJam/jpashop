@@ -13,7 +13,10 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
-        default_batch_fetch_size:  100
+        default_batch_fetch_size:  10 #Entity와 관련된 Collection 정보를 한번에 in 쿼리로 가져옴
+        # 만약 100개 데이터면 10개씩 10번 쿼리가 날아감
+        # 특이사항: 100일 때, 180개 데이터를 가져오면, batch(100)- batch(50)- batch(25)-batch(5)이렇게 가져옴
+        # 왜 이렇게 될까? JPA에서, DB는 원래 미리 in이 들어가는 preparedstatement를 미리 만듬 -> 즉 쿼리를 미리 준비하기 때문에 최적화 갯수가 존재(부하땜시)
     #open-in-view: false
 
   devtools:
