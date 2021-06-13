@@ -6,6 +6,10 @@ import com.ex.jpashop.domain.OrderItem;
 import com.ex.jpashop.domain.OrderStatus;
 import com.ex.jpashop.repository.OrderRepository;
 import com.ex.jpashop.repository.OrderSearch;
+import com.ex.jpashop.repository.order.query.OrderFlatDto;
+import com.ex.jpashop.repository.order.query.OrderItemQueryDto;
+import com.ex.jpashop.repository.order.query.OrderQueryDto;
+import com.ex.jpashop.repository.order.query.OrderQueryRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,12 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 @RestController
 @RequiredArgsConstructor
 public class OrderApiController {
     private final OrderRepository orderRepository;
+    private final OrderQueryRepository orderQueryRepository;
 
     @GetMapping("/api/v1/orders")
     public List<Order> ordersV1(){
@@ -69,6 +74,30 @@ public class OrderApiController {
                 .collect(toList());
 
         return result;
+    }
+
+    @GetMapping("/api/v4/orders")
+    public List<OrderQueryDto> orderV4(){
+        return orderQueryRepository.findOrderQueryDtos();
+    }
+
+    @GetMapping("/api/v5/orders")
+    public List<OrderQueryDto> orderV5(){
+        return orderQueryRepository.findAllByDtos_Optimization();
+    }
+
+    @GetMapping("/api/v6/orders")
+    public List<OrderQueryDto> orderV6(){
+        // 만약 API스펙이 OrderQueryDto라면?
+        List<OrderFlatDto> result = orderQueryRepository.findAllByDtos_Flat();
+        return result.stream()
+                .collect(groupingBy(o-> new OrderQueryDto(o.getOrderId(), o.getName(), o.getOrderDate(), o.getOrderStatus(), o.getAddress()),
+                        mapping(o-> new OrderItemQueryDto(o.getOrderId(), o.getItemName(), o.getOrderPrice(),o.getCount()), toList())
+                )).entrySet().stream()
+                .map(e-> new OrderQueryDto(e.getKey().getOrderId(), e.getKey().getName(), e.getKey().getOrderDate(),e.getKey().getOrderStatus(), e.getKey().getAddress(), e.getValue()))
+                .collect(toList());
+        //API 스펙이 OrderFlatDto인 경우
+        //return orderQueryRepository.findAllByDtos_Flat();
     }
 
     @Getter
